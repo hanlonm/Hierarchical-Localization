@@ -10,3 +10,9 @@ h5py
 pycolmap>=0.3.0
 kornia>=0.6.7
 gdown
+
+open3d
+pytransform3d
+numba
+pymap2d
+Cython
