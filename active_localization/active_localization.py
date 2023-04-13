@@ -18,7 +18,7 @@ from visibility_check import min_max_viewing_angle
 def main():
 
 
-    pcd = o3d.io.read_point_cloud("/local/home/hanlonm/Hierarchical-Localization/outputs/00195/00195.ply")
+    pcd = o3d.io.read_point_cloud("/local/home/hanlonm/Hierarchical-Localization/outputs/00195_test/sfm_superpoint+superglue/00195.ply")
     pcd_points = np.asarray(pcd.points)
 
 
