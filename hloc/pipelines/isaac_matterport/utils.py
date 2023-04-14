@@ -103,10 +103,8 @@ def build_empty_colmap_model(root, sfm_dir):
     """Build a COLMAP model with images and cameras only."""
     calibration = 'calibration.txt'
     cam0 = camera_from_calibration_file(0, root / calibration)
-    # cam1 = camera_from_calibration_file(1, root / calibration.format(1))
     cameras = {0: cam0}
 
-    #T_0to1 = np.loadtxt(root / 'Calibration/undistorted_calib_stereo.txt')
     poses = parse_poses(root / 'image_poses.txt')
     images = {}
     id_ = 0
@@ -127,34 +125,6 @@ def build_empty_colmap_model(root, sfm_dir):
 
         R_w_to_cam0 = T_cam_world[0:3,0:3]
         t_w_to_cam0 = T_cam_world[0:3,3]
-
-        
-
-
-
-
-
-
-
-
-        # R_w_to_cam0 = R_cam0_to_w.T
-        # t_w_to_cam0 = -(R_w_to_cam0 @ t_cam0_to_w)
-
-        # R_w_to_cam1 = T_0to1[:3, :3] @ R_w_to_cam0
-        # t_w_to_cam1 = T_0to1[:3, :3] @ t_w_to_cam0 + T_0to1[:3, 3]
-
-        # for idx, (R_w_to_cam, t_w_to_cam) in enumerate(
-        #         zip([R_w_to_cam0, R_w_to_cam1], [t_w_to_cam0, t_w_to_cam1])):
-        #     image = Image(
-        #         id=id_,
-        #         qvec=rotmat2qvec(R_w_to_cam),
-        #         tvec=t_w_to_cam,
-        #         camera_id=idx,
-        #         name=f'{img_name}.jpg',
-        #         xys=np.zeros((0, 2), float),
-        #         point3D_ids=np.full(0, -1, int))
-        #     images[id_] = image
-        #     id_ += 1
         
         image = Image(
             id=id_,

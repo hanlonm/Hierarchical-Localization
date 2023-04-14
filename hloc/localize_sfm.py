@@ -220,6 +220,8 @@ def main(reference_sfm: Union[Path, pycolmap.Reconstruction],
     with open(logs_path, 'wb') as f:
         pickle.dump(logs, f)
     logger.info('Done!')
+    
+    return logs
 
 
 if __name__ == '__main__':
