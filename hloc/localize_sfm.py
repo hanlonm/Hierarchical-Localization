@@ -60,6 +60,7 @@ class QueryLocalizer:
             points2D, points3D, query_camera,
             estimation_options=self.config.get('estimation', {}),
             refinement_options=self.config.get('refinement', {}),
+            return_covariance=True
         )
         return ret
 
