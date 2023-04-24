@@ -18,7 +18,7 @@ results = outputs / (environment + '_hloc_superpoint+superglue_netvlad20.txt')  
 local_features = outputs / 'feats-superpoint-n4096-rmax1600.h5'
 
 # Evaluation Paths
-run_path = Path('/local/home/hanlonm/mt-matthew/eval_results/run_1')
+run_path = Path('/local/home/hanlonm/mt-matthew/eval_results/run_2')
 
 feature_conf = extract_features.confs['superpoint_max']
 matcher_conf = match_features.confs['superglue']
@@ -76,8 +76,18 @@ for trajectory_dir in trajectory_dirs:
         pose_file.write("# tx ty tz qw qx qy qz points_detected num_PnP_inliers")
         for image_result_key in variation_results:
             result = localization_results[image_result_key]
-            tvec = result['PnP_ret']['tvec']
-            qvec = result['PnP_ret']['qvec']
+            success = result['PnP_ret']['success']
+            if success:
+                tvec = result['PnP_ret']['tvec']
+                qvec = result['PnP_ret']['qvec']
+                num_points_detected = len(result['points3D_ids'])
+                num_pnp_inliers = result['PnP_ret']['num_inliers']
+            else:
+                print("Failed to localize image {} !".format(image_result_key))
+                tvec = [0,0,0]
+                qvec = [0,0,0,0]
+                num_points_detected = 0
+                num_pnp_inliers = 0
             rot = pr.matrix_from_quaternion(qvec)
             T_cam_world = pt.transform_from(rot, tvec)
 
@@ -85,7 +95,7 @@ for trajectory_dir in trajectory_dirs:
             T_world_base = T_world_map @ T_map_base
 
             pq = pt.pq_from_transform(T_world_base)
-            loc_stats = np.append(pq, [len(result['points3D_ids']), result['PnP_ret']['num_inliers']])
+            loc_stats = np.append(pq, [num_points_detected, num_pnp_inliers])
 
             pose_file.write("\n" + " ".join(map(str, loc_stats)))
         pose_file.close()    
