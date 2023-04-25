@@ -9,22 +9,22 @@ import numpy as np
 import os
 
 
-environment = '00195'
+environment = 'warehouse'
 dataset = Path('/local/home/hanlonm/Hierarchical-Localization/datasets/'+environment)
 images = dataset
-outputs = Path('/local/home/hanlonm/Hierarchical-Localization/outputs/'+environment+'_loc')
+outputs = Path('/local/home/hanlonm/Hierarchical-Localization/outputs/'+environment)
 loc_pairs = outputs / 'pairs-query-netvlad20.txt'  # top 20 retrieved by NetVLAD
 results = outputs / (environment + '_hloc_superpoint+superglue_netvlad20.txt')  # the result file
 local_features = outputs / 'feats-superpoint-n4096-rmax1600.h5'
 
 # Evaluation Paths
-run_path = Path('/local/home/hanlonm/mt-matthew/eval_results/run_2')
+run_path = Path('/local/home/hanlonm/mt-matthew/eval_results/warehouse_run_1')
 
 feature_conf = extract_features.confs['superpoint_max']
 matcher_conf = match_features.confs['superglue']
 retrieval_conf = extract_features.confs['netvlad']
 
-reconstruction = pycolmap.Reconstruction("/local/home/hanlonm/Hierarchical-Localization/outputs/00195_loc/sfm_superpoint+superglue")
+reconstruction = pycolmap.Reconstruction("/local/home/hanlonm/Hierarchical-Localization/outputs/{}/sfm_superpoint+superglue".format(environment))
 
 query_image_list = [p.relative_to(dataset).as_posix() for p in (dataset / 'localization/').iterdir()]
 

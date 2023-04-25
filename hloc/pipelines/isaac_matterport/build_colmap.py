@@ -4,10 +4,10 @@ import argparse
 from hloc import extract_features, match_features, pairs_from_poses, triangulation, pairs_from_retrieval
 from hloc.pipelines.isaac_matterport.utils import build_empty_colmap_model
 
-environment = "00195"
-images = Path('/local/home/hanlonm/Hierarchical-Localization/datasets/00195/')
-outputs = Path('/local/home/hanlonm/Hierarchical-Localization/outputs/'+environment+'_loc/')
-dataset_dir = Path('/local/home/hanlonm/Hierarchical-Localization/datasets/00195')
+environment = "warehouse"
+images = Path('/local/home/hanlonm/Hierarchical-Localization/datasets/'+environment)
+outputs = Path('/local/home/hanlonm/Hierarchical-Localization/outputs/'+environment)
+dataset_dir = Path('/local/home/hanlonm/Hierarchical-Localization/datasets/'+environment)
 
 ref_sfm_empty = outputs / 'sfm_reference_empty'
 ref_sfm = outputs / 'sfm_superpoint+superglue'
