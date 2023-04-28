@@ -4,13 +4,13 @@ import argparse
 from hloc import extract_features, match_features, pairs_from_poses, triangulation, pairs_from_retrieval
 from hloc.pipelines.isaac_matterport.utils import build_empty_colmap_model
 
-environment = "warehouse"
-images = Path('/local/home/hanlonm/Hierarchical-Localization/datasets/'+environment)
+environment = "00195_NN"
+images = Path('/local/home/hanlonm/Hierarchical-Localization/datasets/'+"00195")
 outputs = Path('/local/home/hanlonm/Hierarchical-Localization/outputs/'+environment)
-dataset_dir = Path('/local/home/hanlonm/Hierarchical-Localization/datasets/'+environment)
+dataset_dir = Path('/local/home/hanlonm/Hierarchical-Localization/datasets/'+"00195")
 
 ref_sfm_empty = outputs / 'sfm_reference_empty'
-ref_sfm = outputs / 'sfm_superpoint+superglue'
+ref_sfm = outputs / 'sfm_superpoint+NN'
 
 num_ref_pairs = 20
 ref_pairs = outputs / f'pairs-db-dist{num_ref_pairs}.txt'
@@ -18,7 +18,7 @@ ref_pairs = outputs / f'pairs-db-dist{num_ref_pairs}.txt'
 
 
 fconf = extract_features.confs['superpoint_max']
-mconf = match_features.confs['superglue']
+mconf = match_features.confs['NN-superpoint']
 #retrieval_conf = extract_features.confs['netvlad']
 
 #retrieval_path = extract_features.main(retrieval_conf, images, outputs)

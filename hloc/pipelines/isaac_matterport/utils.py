@@ -4,6 +4,7 @@ import logging
 from pathlib import Path
 from pytransform3d import transformations as pt
 from pytransform3d import rotations as pr
+from typing import List, Tuple
 
 
 from ...utils.read_write_model import qvec2rotmat, rotmat2qvec

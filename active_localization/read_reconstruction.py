@@ -22,9 +22,10 @@ import numpy as np
 
 fig = viz_3d.init_figure()
 
+output_folder = "00195_loc"
 #reconstruction = pycolmap.Reconstruction("/local/home/hanlonm/Hierarchical-Localization/outputs/00195_test/sfm_reference_empty")
-reconstruction = pycolmap.Reconstruction("/local/home/hanlonm/Hierarchical-Localization/outputs/warehouse/sfm_superpoint+superglue")
-print(reconstruction.summary())
+reconstruction = pycolmap.Reconstruction("/local/home/hanlonm/Hierarchical-Localization/outputs/{}/sfm_superpoint+superglue".format(output_folder))
+
 
 for image_id, image in reconstruction.images.items():
     image: Image
@@ -47,4 +48,5 @@ for camera_id, camera in reconstruction.cameras.items():
 viz_3d.plot_reconstruction(fig, reconstruction, color='rgba(0,0,255,0.5)', name="mapping")
 #reconstruction.export_PLY('/local/home/hanlonm/Hierarchical-Localization/outputs/00195_test/sfm_superpoint+superglue/00195.ply')
 fig.show()
+print(reconstruction.summary())
 #plt.show()
