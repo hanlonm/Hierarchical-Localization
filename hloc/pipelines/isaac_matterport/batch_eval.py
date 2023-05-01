@@ -9,8 +9,8 @@ import numpy as np
 import os
 
 
-environment = '00195_NN'
-dataset = Path('/local/home/hanlonm/Hierarchical-Localization/datasets/'+"00195")
+environment = '00195_HL'
+dataset = Path('/local/home/hanlonm/Hierarchical-Localization/datasets/'+environment)
 images = dataset
 outputs = Path('/local/home/hanlonm/Hierarchical-Localization/outputs/'+environment)
 loc_pairs = outputs / 'pairs-query-netvlad20.txt'  # top 20 retrieved by NetVLAD
@@ -21,12 +21,12 @@ results = outputs / (environment + '_hloc_superpoint+superglue_netvlad20.txt')  
 run_path = Path('/local/home/hanlonm/mt-matthew/eval_results/run_2_NN')
 
 feature_conf = extract_features.confs['superpoint_max']
-matcher_conf = match_features.confs['NN-superpoint']
+matcher_conf = match_features.confs['superglue']
 retrieval_conf = extract_features.confs['netvlad']
 
 local_features = outputs / (feature_conf['output']+'.h5')
 
-reconstruction = pycolmap.Reconstruction("/local/home/hanlonm/Hierarchical-Localization/outputs/{}/sfm_superpoint+NN".format(environment))
+reconstruction = pycolmap.Reconstruction("/local/home/hanlonm/Hierarchical-Localization/outputs/{}/sfm_superpoint+superglue".format(environment))
 
 query_image_list = [p.relative_to(dataset).as_posix() for p in (dataset / 'localization/').iterdir()]
 
@@ -38,7 +38,9 @@ loc_matches = match_features.main(matcher_conf, loc_pairs, feature_conf['output'
 
 
 # eval_images = np.loadtxt(dataset / 'stamped_groundtruth.txt', int, skiprows=1)[:,0]
-camera_string = "PINHOLE 1280 720 1462.857177734375 1080.0 640 360"
+# spot_cam K: [609.5238037109375, 0.0, 640.0, 0.0, 610.1694946289062, 360.0, 0.0, 0.0, 1.0] 
+# camera_string = "PINHOLE 1280 720 1462.857177734375 1080.0 640 360"
+camera_string = "PINHOLE 1280 720 609.5238037109375 610.1694946289062 640 360"
 query_file = open(dataset / 'queries.txt', "w")
 for eval_image in query_image_list:
     query_file.write("{} {} \n".format(str(eval_image, camera_string)))
@@ -60,7 +62,7 @@ T_cam_base = pt.transform_from(
 
 T_world_map = pt.transform_from(
             np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]),
-            np.array([0, 0.0, 1.8]))
+            np.array([0, 0.0, 0.0]))
 
 localization_results: dict = logs['loc']
 sorted_result_keys = list(localization_results.keys())
