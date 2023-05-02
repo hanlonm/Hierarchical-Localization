@@ -4,16 +4,16 @@ from hloc import extract_features, match_features, reconstruction, visualization
 from hloc.visualization import plot_images, read_image
 from hloc.utils import viz_3d
 
-environment = "00195_HL"
+environment = "00195_HL_SIFT"
 images = Path('/local/home/hanlonm/Hierarchical-Localization/datasets/'+environment)
 outputs = Path('/local/home/hanlonm/Hierarchical-Localization/outputs/'+environment+'/')
 sfm_pairs = outputs / 'pairs-netvlad.txt'
-sfm_dir = outputs / 'sfm_superpoint+superglue'
+sfm_dir = outputs / 'reconstruction'
 
 
 retrieval_conf = extract_features.confs['netvlad']
-feature_conf = extract_features.confs['superpoint_max']
-matcher_conf = match_features.confs['superglue']
+feature_conf = extract_features.confs['sift']
+matcher_conf = match_features.confs['NN-superpoint']
 
 retrieval_path = extract_features.main(retrieval_conf, images, outputs)
 pairs_from_retrieval.main(retrieval_path, sfm_pairs, num_matched=20)
