@@ -1,0 +1,3 @@
+Hierarchical-Localization/outputs
+Hierarchical-Localization/datasets
+.venv/

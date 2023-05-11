@@ -12,12 +12,12 @@ import h5py
 import json
 from pose_utils import compute_absolute_pose_error
 
-with open('/local/home/hanlonm/Hierarchical-Localization/outputs/00195_HL/00195_HL_hloc_superpoint+superglue_netvlad20.txt_logs.pkl', 'rb') as f:
+with open('/local/home/hanlonm/Hierarchical-Localization/outputs/00195_HL_SPA_NN/00195_HL_SPA_NN_hloc_superpoint+superglue_netvlad20.txt_logs.pkl', 'rb') as f:
     logs = pickle.load(f)
 
 result_dict = {}
 
-hf = h5py.File("/local/home/hanlonm/mt-matthew/00195_HL_1683298074-test.h5", "r+")
+hf = h5py.File("/local/home/hanlonm/mt-matthew/data/00195_HL_SPA_NN/test-2000.h5", "r+")
 num_points = hf.attrs["num_points"]
 num_angles = hf.attrs["num_angles"]
 

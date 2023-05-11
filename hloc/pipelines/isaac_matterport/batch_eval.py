@@ -9,7 +9,7 @@ import numpy as np
 import os
 
 
-environment = '00195_HL_SIFT'
+environment = '00195_HL_SPA_NN'
 dataset = Path('/local/home/hanlonm/Hierarchical-Localization/datasets/'+environment)
 images = dataset
 outputs = Path('/local/home/hanlonm/Hierarchical-Localization/outputs/'+environment)
@@ -18,10 +18,10 @@ results = outputs / (environment + '_hloc_superpoint+superglue_netvlad20.txt')  
 
 
 # Evaluation Paths
-run_name = "00195_HL_SIFT_run_1"
+run_name = "00195_HL_SPA_NN_clf4_1000"
 run_path = Path('/local/home/hanlonm/mt-matthew/eval_results') / run_name
 
-feature_conf = extract_features.confs['sift']
+feature_conf = extract_features.confs['superpoint_aachen']
 matcher_conf = match_features.confs['NN-superpoint']
 retrieval_conf = extract_features.confs['netvlad']
 
