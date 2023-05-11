@@ -1,12 +1,15 @@
+import os
 from pathlib import Path
 
 from hloc import extract_features, match_features, reconstruction, visualization, pairs_from_exhaustive, pairs_from_retrieval
 from hloc.visualization import plot_images, read_image
 from hloc.utils import viz_3d
 
+
+home_dir = os.environ.get("CLUSTER_HOME", "/local/home/hanlonm")
 environment = "00195_HL_SPA_NN"
-images = Path('/local/home/hanlonm/Hierarchical-Localization/datasets/'+environment)
-outputs = Path('/local/home/hanlonm/Hierarchical-Localization/outputs/'+environment+'/')
+images = Path(home_dir + '/Hierarchical-Localization/datasets/'+environment)
+outputs = Path(home_dir+ '/Hierarchical-Localization/outputs/'+environment+'/')
 sfm_pairs = outputs / 'pairs-netvlad.txt'
 sfm_dir = outputs / 'reconstruction'
 
