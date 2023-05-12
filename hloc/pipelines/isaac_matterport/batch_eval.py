@@ -117,16 +117,16 @@ def main():
             pose_file.close()    
 
     # clean up
-    # fs = h5py.File(local_features, 'r')
-    # fd = h5py.File(outputs / (feature_conf['output']+'_copy.h5'), 'w')
-    # for a in fs.attrs:
-    #     fd.attrs[a] = fs.attrs[a]
-    # for d in fs:
-    #     if not 'localization' in d: fs.copy(d, fd)
-    # fs.close()
-    # fd.close()
-    # os.remove(local_features)
-    # os.rename(outputs / (feature_conf['output']+'_copy.h5'), local_features)
+    fs = h5py.File(local_features, 'r')
+    fd = h5py.File(outputs / (feature_conf['output']+'_copy.h5'), 'w')
+    for a in fs.attrs:
+        fd.attrs[a] = fs.attrs[a]
+    for d in fs:
+        if not 'localization' in d: fs.copy(d, fd)
+    fs.close()
+    fd.close()
+    os.remove(local_features)
+    os.rename(outputs / (feature_conf['output']+'_copy.h5'), local_features)
             
 
 if __name__ == "__main__":
