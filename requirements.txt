@@ -16,3 +16,4 @@ pytransform3d
 numba
 pymap2d
 Cython
+urllib3==1.26.6
