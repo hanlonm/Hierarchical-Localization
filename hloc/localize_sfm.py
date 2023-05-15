@@ -199,8 +199,11 @@ def main(reference_sfm: Union[Path, pycolmap.Reconstruction],
             if ret['success']:
                 poses[qname] = (ret['qvec'], ret['tvec'])
             else:
-                closest = reference_sfm.images[db_ids[0]]
-                poses[qname] = (closest.qvec, closest.tvec)
+                if len(db_ids) > 0:
+                    closest = reference_sfm.images[db_ids[0]]
+                    poses[qname] = (closest.qvec, closest.tvec)
+                else:
+                    poses[qname] = (np.array([1.0,0.0,0.0,0.0]), np.array[0.0,0.0,0.0])
             log['covisibility_clustering'] = covisibility_clustering
             logs['loc'][qname] = log
 
