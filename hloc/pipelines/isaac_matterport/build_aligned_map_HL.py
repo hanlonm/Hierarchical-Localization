@@ -40,7 +40,7 @@ def build_map(environment):
                 image_names.append(data[0])
                 locations.append([float(data[1]),float(data[2]),float(data[3])])
 
-    similarity_transform = model.align_robust(image_names, locations, 3, max_error=12.0, min_inlier_ratio=0.1)
+    similarity_transform = model.align_robust(image_names, locations, 3, max_error=0.05, min_inlier_ratio=0.3)
     model.write(sfm_dir)
 
     fig = viz_3d.init_figure()
