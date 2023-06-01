@@ -13,6 +13,17 @@ import argparse
 from pose_utils import compute_absolute_pose_error
 
 
+def cleanup_h5(original_file, temp_file, remove_key):
+    fs = h5py.File(original_file, 'r')
+    fd = h5py.File(temp_file, 'w')
+    for a in fs.attrs:
+        fd.attrs[a] = fs.attrs[a]
+    for d in fs:
+        if not remove_key in d: fs.copy(d, fd)
+    fs.close()
+    fd.close()
+    os.remove(original_file)
+    os.rename(temp_file, original_file)
 
 
 def main():
@@ -42,6 +53,10 @@ def main():
     retrieval_conf = extract_features.confs['netvlad']
 
     local_features = outputs / (feature_conf['output']+'.h5')
+    global_features = outputs / (retrieval_conf['output']+'.h5')
+
+    cleanup_h5(original_file=local_features, temp_file=outputs / (feature_conf['output']+'_copy.h5'), remove_key="training")
+    cleanup_h5(original_file=global_features, temp_file=outputs / (retrieval_conf['output']+'_copy.h5'), remove_key="training")
 
     reconstruction = pycolmap.Reconstruction(home_dir + "/Hierarchical-Localization/outputs/{}/reconstruction".format(environment))
 
@@ -127,16 +142,8 @@ def main():
     hf.close()
 
     # clean up
-    fs = h5py.File(local_features, 'r')
-    fd = h5py.File(outputs / (feature_conf['output']+'_copy.h5'), 'w')
-    for a in fs.attrs:
-        fd.attrs[a] = fs.attrs[a]
-    for d in fs:
-        if not 'training' in d: fs.copy(d, fd)
-    fs.close()
-    fd.close()
-    os.remove(local_features)
-    os.rename(outputs / (feature_conf['output']+'_copy.h5'), local_features)
+    cleanup_h5(original_file=local_features, temp_file=outputs/(feature_conf['output']+'_copy.h5'), remove_key="training")
+    cleanup_h5(original_file=global_features, temp_file=outputs / (retrieval_conf['output']+'_copy.h5'), remove_key="training")
 
 
 if __name__ == "__main__":
