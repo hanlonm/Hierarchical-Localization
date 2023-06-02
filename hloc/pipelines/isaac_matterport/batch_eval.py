@@ -11,6 +11,19 @@ import argparse
 import h5py
 
 
+def cleanup_h5(original_file, temp_file, remove_key):
+    fs = h5py.File(original_file, 'r')
+    fd = h5py.File(temp_file, 'w')
+    for a in fs.attrs:
+        fd.attrs[a] = fs.attrs[a]
+    for d in fs:
+        if not remove_key in d: fs.copy(d, fd)
+    fs.close()
+    fd.close()
+    os.remove(original_file)
+    os.rename(temp_file, original_file)
+
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -26,7 +39,7 @@ def main():
     loc_pairs = outputs / 'pairs-query-netvlad20.txt'  # top 20 retrieved by NetVLAD
     results = outputs / (environment + '_hloc_superpoint+superglue_netvlad20.txt')  # the result file
 
-
+    
     # Evaluation Paths
     run_name = args.run_name
     run_path = Path(home_dir + '/mt-matthew/eval_results') / str(f"{environment}_{run_name}")
@@ -36,6 +49,11 @@ def main():
     retrieval_conf = extract_features.confs['netvlad']
 
     local_features = outputs / (feature_conf['output']+'.h5')
+    global_features = outputs / (retrieval_conf['output']+'.h5')
+
+    cleanup_h5(original_file=local_features, temp_file=outputs / (feature_conf['output']+'_copy.h5'), remove_key="localization")
+    cleanup_h5(original_file=global_features, temp_file=outputs / (retrieval_conf['output']+'_copy.h5'), remove_key="localization")
+
 
     reconstruction = pycolmap.Reconstruction(home_dir + "/Hierarchical-Localization/outputs/{}/reconstruction".format(environment))
 
@@ -117,16 +135,9 @@ def main():
             pose_file.close()    
 
     # clean up
-    fs = h5py.File(local_features, 'r')
-    fd = h5py.File(outputs / (feature_conf['output']+'_copy.h5'), 'w')
-    for a in fs.attrs:
-        fd.attrs[a] = fs.attrs[a]
-    for d in fs:
-        if not 'localization' in d: fs.copy(d, fd)
-    fs.close()
-    fd.close()
-    os.remove(local_features)
-    os.rename(outputs / (feature_conf['output']+'_copy.h5'), local_features)
+    cleanup_h5(original_file=local_features, temp_file=outputs / (feature_conf['output']+'_copy.h5'), remove_key="localization")
+    cleanup_h5(original_file=global_features, temp_file=outputs / (retrieval_conf['output']+'_copy.h5'), remove_key="localization")
+
             
 
 if __name__ == "__main__":
