@@ -74,7 +74,8 @@ for result_key in sorted_result_keys:
 
 preds = np.array(preds)
 gt = np.array(gt)
-errors = compute_absolute_pose_error(p_es_aligned=preds[:,:3], q_es_aligned=preds[:,3:], p_gt=gt[:,:3], q_gt=gt[:,3:])
+errors = compute_absolute_pose_error(p_es_aligned=preds[:,:3], q_es_aligned=preds[:,3:],
+                                     p_gt=gt[:,:3], q_gt=gt[:,3:])
 
 e_trans_vec = errors[1]
 e_rot = np.array([errors[2]]).T
@@ -86,5 +87,3 @@ print()
 
 hf.create_dataset("errors", data=errors)
 hf.close()
-
-

@@ -11,7 +11,7 @@ import h5py
 import json
 
 
-environment = '00195_HL'
+environment = '00195_HL_SPA_NN'
 dataset = Path('/local/home/hanlonm/Hierarchical-Localization/datasets/'+environment)
 images = dataset
 outputs = Path('/local/home/hanlonm/Hierarchical-Localization/outputs/'+environment)
@@ -20,7 +20,7 @@ results = outputs / (environment + '_hloc_superpoint+superglue_netvlad20.txt')  
 
 
 
-feature_conf = extract_features.confs['superpoint_max']
+feature_conf = extract_features.confs['superpoint_aachen']
 matcher_conf = match_features.confs['NN-superpoint']
 retrieval_conf = extract_features.confs['netvlad']
 

@@ -166,6 +166,6 @@ def plot_reconstruction(
                             p3D.error <= max_reproj_error and
                             p3D.track.length() >= min_track_length)]
     if points:
-        plot_points(fig, np.array(xyzs), color=color, ps=1, name=name)
+        plot_points(fig, np.array(xyzs), color=color, ps=0.8, name=name)
     if cameras:
         plot_cameras(fig, rec, color=color, legendgroup=name, size=cs)

@@ -28,7 +28,7 @@ T_cam_base = pt.transform_from(
 
 fig = viz_3d.init_figure()
 
-output_folder = "00195_HL_SIFT"
+output_folder = "00195"
 #reconstruction = pycolmap.Reconstruction("/local/home/hanlonm/Hierarchical-Localization/outputs/00195_test/sfm_reference_empty")
 reconstruction = pycolmap.Reconstruction("/local/home/hanlonm/Hierarchical-Localization/outputs/{}/reconstruction".format(output_folder))
 
@@ -55,7 +55,7 @@ for point3D_id, point3D in reconstruction.points3D.items():
 for camera_id, camera in reconstruction.cameras.items():
     print(camera_id, camera)
     
-viz_3d.plot_reconstruction(fig, reconstruction, color='rgba(0,255,0,0.5)', name="mapping",)
+viz_3d.plot_reconstruction(fig, reconstruction, color='rgba(255`,0,0,0.5)', name="mapping",cameras=False, )
 #reconstruction.export_PLY('/local/home/hanlonm/Hierarchical-Localization/outputs/00195_test/sfm_superpoint+superglue/00195.ply')
 fig.show()
 print(reconstruction.summary())
