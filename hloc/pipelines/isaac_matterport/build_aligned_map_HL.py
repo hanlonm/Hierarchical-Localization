@@ -5,6 +5,7 @@ from pathlib import Path
 from hloc import extract_features, match_features, reconstruction, visualization, pairs_from_exhaustive, pairs_from_retrieval
 from hloc.visualization import plot_images, read_image
 from hloc.utils import viz_3d
+import pycolmap
 
 def build_map(environment):
     home_dir = os.environ.get("CLUSTER_HOME", "/local/home/hanlonm")
@@ -25,7 +26,7 @@ def build_map(environment):
     feature_path = extract_features.main(feature_conf, images, outputs)
     matches = match_features.main(matcher_conf, sfm_pairs, feature_conf['output'], outputs)
 
-    model = reconstruction.main(sfm_dir, images, sfm_pairs, feature_path, matches, verbose=True)
+    model = reconstruction.main(sfm_dir, images, sfm_pairs, feature_path, matches, verbose=True, camera_mode=pycolmap.CameraMode.SINGLE)
 
     image_names = []
     locations = []
