@@ -9,6 +9,10 @@ import numpy as np
 import os
 import argparse
 import h5py
+import pickle
+from pose_utils import compute_absolute_pose_error
+
+
 
 
 def cleanup_h5(original_file, temp_file, remove_key):
@@ -23,26 +27,22 @@ def cleanup_h5(original_file, temp_file, remove_key):
     os.remove(original_file)
     os.rename(temp_file, original_file)
 
-
-
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--environment", type=str, default="00195")
-    parser.add_argument("--run_name", type=str, default="best_test")
+    parser.add_argument("--environment", type=str, default="00598")
+    parser.add_argument("--run_name", type=str, default="best_test_2")
     args = parser.parse_args()
 
     home_dir = os.environ.get("CLUSTER_HOME", "/local/home/hanlonm")
     environment = args.environment
+    eval_dir = Path(home_dir) / "mt-matthew/eval_results/path_data/{}_{}/best_loc".format(
+        environment, args.run_name)
+    
     dataset = Path(home_dir + '/Hierarchical-Localization/datasets/'+environment)
     images = dataset
     outputs = Path(home_dir +'/Hierarchical-Localization/outputs/'+environment)
-    loc_pairs = outputs / 'pairs-query-netvlad20.txt'  # top 20 retrieved by NetVLAD
+    pairs = outputs / 'pairs-query-netvlad20.txt'  # top 20 retrieved by NetVLAD
     results = outputs / (environment + '_hloc_superpoint+superglue_netvlad20.txt')  # the result file
-
-    
-    # Evaluation Paths
-    run_name = args.run_name
-    run_path = Path(home_dir + '/mt-matthew/eval_results/path_data') / str(f"{environment}_{run_name}")
 
     feature_conf = extract_features.confs['superpoint_aachen']
     matcher_conf = match_features.confs['NN-superpoint']
@@ -51,19 +51,17 @@ def main():
     local_features = outputs / (feature_conf['output']+'.h5')
     global_features = outputs / (retrieval_conf['output']+'.h5')
 
-    cleanup_h5(original_file=local_features, temp_file=outputs / (feature_conf['output']+'_copy.h5'), remove_key="localization")
-    cleanup_h5(original_file=global_features, temp_file=outputs / (retrieval_conf['output']+'_copy.h5'), remove_key="localization")
-
+    cleanup_h5(original_file=local_features, temp_file=outputs / (feature_conf['output']+'_copy.h5'), remove_key="best_loc")
+    cleanup_h5(original_file=global_features, temp_file=outputs / (retrieval_conf['output']+'_copy.h5'), remove_key="best_loc")
 
     reconstruction = pycolmap.Reconstruction(home_dir + "/Hierarchical-Localization/outputs/{}/reconstruction".format(environment))
-
-    query_image_list = [p.relative_to(dataset).as_posix() for p in (dataset / 'localization/').iterdir()]
+    query_image_list = [p.relative_to(dataset).as_posix() for p in (dataset / 'best_loc/').iterdir()]
 
     features = extract_features.main(feature_conf, images, outputs, image_list=query_image_list, feature_path=local_features, overwrite=False)
 
     global_descriptors = extract_features.main(retrieval_conf, images, outputs)
-    pairs_from_retrieval.main(global_descriptors, loc_pairs, num_matched=20, query_prefix="localization",db_prefix="mapping")
-    loc_matches = match_features.main(matcher_conf, loc_pairs, feature_conf['output'], outputs)
+    pairs_from_retrieval.main(global_descriptors, pairs, num_matched=20, query_prefix="best_loc",db_prefix="mapping")
+    loc_matches = match_features.main(matcher_conf, pairs, feature_conf['output'], outputs)
 
 
     # eval_images = np.loadtxt(dataset / 'stamped_groundtruth.txt', int, skiprows=1)[:,0]
@@ -78,12 +76,13 @@ def main():
     logs = localize_sfm.main(
         reconstruction,
         dataset / 'queries.txt',
-        loc_pairs,
+        pairs,
         features,
         loc_matches,
         results,
         covisibility_clustering=False)  # not required with SuperPoint+SuperGlue
-
+    
+    localization_results: dict = logs['loc']
 
     T_cam_base = pt.transform_from(
                 np.array([[0.0, -1.0, 0.0], [0.0, 0.0, -1.0], [1.0, 0.0, 0.0]]),
@@ -92,25 +91,31 @@ def main():
     T_world_map = pt.transform_from(
                 np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]),
                 np.array([0, 0.0, 0.0]))
-
+    
     localization_results: dict = logs['loc']
     sorted_result_keys = list(localization_results.keys())
     sorted_result_keys.sort()
+    print()
 
-    trajectory_dirs = os.listdir(run_path)
-    trajectory_dirs = [dir for dir in trajectory_dirs if "best_loc" not in dir]
+    path_file = np.load(eval_dir / "paths.npz")
+    path_keys = list(path_file.keys())
+    path_keys = [str(key) for key in path_keys]
 
-    for trajectory_dir in trajectory_dirs:
-        trajectory_results = [key for key in sorted_result_keys if trajectory_dir in key]
-        trajectory_variations = os.listdir( run_path / trajectory_dir)
+    for path_key in path_keys:
+        path_poses = path_file[path_key]
+        path_results = [result_key for result_key in sorted_result_keys if path_key in result_key]
+        len_results = len(path_results)
+        it = 0
+        best_path = []
+        pose_file = open(eval_dir/  (path_key + '_loc_est.txt'), "w")
+        pose_file.write("# tx ty tz qw qx qy qz points_detected num_PnP_inliers")
+        for i, waypoint in enumerate(path_poses):
+            preds = []
+            gt_poses = []
+            for j, view in enumerate(waypoint):
+                gt_poses.append(view)
 
-        for variation in trajectory_variations:
-            variation_results = [key for key in trajectory_results if variation[:-4] in key]
-            pose_estimates = np.zeros((len(variation_results), 7))
-            pose_file = open(run_path/ trajectory_dir / (variation[:-4] + '_loc_est.txt'), "w")
-            pose_file.write("# tx ty tz qw qx qy qz points_detected num_PnP_inliers")
-            for image_result_key in variation_results:
-                result = localization_results[image_result_key]
+                result = localization_results[path_results[it]]
                 success = result['PnP_ret']['success']
                 if success:
                     tvec = result['PnP_ret']['tvec']
@@ -118,7 +123,7 @@ def main():
                     num_points_detected = len(result['points3D_ids'])
                     num_pnp_inliers = result['PnP_ret']['num_inliers']
                 else:
-                    print("Failed to localize image {} !".format(image_result_key))
+                    print("Failed to localize image {} !".format(path_results[it]))
                     tvec = [0,0,0]
                     qvec = [0,0,0,0]
                     num_points_detected = 0
@@ -130,16 +135,31 @@ def main():
                 T_world_base = T_world_map @ T_map_base
 
                 pq = pt.pq_from_transform(T_world_base)
-                loc_stats = np.append(pq, [num_points_detected, num_pnp_inliers])
+                pq = np.append(pq, [num_points_detected, num_pnp_inliers])
+                preds.append(pq)
+                it += 1
+            preds = np.array(preds)
+            errors = compute_absolute_pose_error(p_es_aligned=preds[:,:3], q_es_aligned=preds[:,3:-2],
+                                        p_gt=waypoint[:,:3], q_gt=waypoint[:,3:])
+            
+            e_trans = errors[0]
+            e_trans_vec = errors[1]
+            e_rot = np.array([errors[2]]).T
 
-                pose_file.write("\n" + " ".join(map(str, loc_stats)))
-            pose_file.close()    
+            best_view = waypoint[np.argmin(e_trans)]
+            best_pred = preds[np.argmin(e_trans)]
+            pose_file.write("\n" + " ".join(map(str, best_pred)))
+            best_path.append(best_view)
 
-    # clean up
-    cleanup_h5(original_file=local_features, temp_file=outputs / (feature_conf['output']+'_copy.h5'), remove_key="localization")
-    cleanup_h5(original_file=global_features, temp_file=outputs / (retrieval_conf['output']+'_copy.h5'), remove_key="localization")
+        pose_file.close()
+        best_path = np.array(best_path)
+        np.save(eval_dir/(path_key + '.npy'), best_path)
+
 
             
+
+                
+
 
 if __name__ == "__main__":
     
