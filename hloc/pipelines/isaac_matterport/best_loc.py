@@ -29,8 +29,8 @@ def cleanup_h5(original_file, temp_file, remove_key):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--environment", type=str, default="00598")
-    parser.add_argument("--run_name", type=str, default="best_test_2")
+    parser.add_argument("--environment", type=str, default="00195")
+    parser.add_argument("--run_name", type=str, default="test")
     args = parser.parse_args()
 
     home_dir = os.environ.get("CLUSTER_HOME", "/local/home/hanlonm")
@@ -101,6 +101,7 @@ def main():
     path_keys = list(path_file.keys())
     path_keys = [str(key) for key in path_keys]
 
+    save_localizations_dict = {}
     for path_key in path_keys:
         path_poses = path_file[path_key]
         path_results = [result_key for result_key in sorted_result_keys if path_key in result_key]
@@ -109,11 +110,12 @@ def main():
         best_path = []
         pose_file = open(eval_dir/  (path_key + '_loc_est.txt'), "w")
         pose_file.write("# tx ty tz qw qx qy qz points_detected num_PnP_inliers")
+        path_localizations = []
         for i, waypoint in enumerate(path_poses):
             preds = []
             gt_poses = []
             for j, view in enumerate(waypoint):
-                gt_poses.append(view)
+                gt_poses.append(view[0])
 
                 result = localization_results[path_results[it]]
                 success = result['PnP_ret']['success']
@@ -139,8 +141,10 @@ def main():
                 preds.append(pq)
                 it += 1
             preds = np.array(preds)
+            path_localizations.append(preds)
+
             errors = compute_absolute_pose_error(p_es_aligned=preds[:,:3], q_es_aligned=preds[:,3:-2],
-                                        p_gt=waypoint[:,:3], q_gt=waypoint[:,3:])
+                                        p_gt=waypoint[:,0,:3], q_gt=waypoint[:,0,3:])
             
             e_trans = errors[0]
             e_trans_vec = errors[1]
@@ -151,9 +155,14 @@ def main():
             pose_file.write("\n" + " ".join(map(str, best_pred)))
             best_path.append(best_view)
 
+        path_localizations = np.array(path_localizations)
+        save_localizations_dict[path_key] = path_localizations
+        
         pose_file.close()
         best_path = np.array(best_path)
         np.save(eval_dir/(path_key + '.npy'), best_path)
+
+    np.savez(eval_dir / "localizations.npz", **save_localizations_dict)
 
 
             
