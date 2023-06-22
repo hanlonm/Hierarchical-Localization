@@ -35,8 +35,8 @@ def main():
 
     home_dir = os.environ.get("CLUSTER_HOME", "/local/home/hanlonm")
     environment = args.environment
-    eval_dir = Path(home_dir) / "mt-matthew/eval_results/path_data/{}_{}/best_loc".format(
-        environment, args.run_name)
+    eval_dir = Path(home_dir) / "mt-matthew/data/{}/best_loc".format(
+        environment)
     
     dataset = Path(home_dir + '/Hierarchical-Localization/datasets/'+environment)
     images = dataset
