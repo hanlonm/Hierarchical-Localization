@@ -7,7 +7,7 @@ from hloc.visualization import plot_images, read_image
 from hloc.utils import viz_3d
 import pycolmap
 
-def build_map(environment):
+def build_map(environment, align):
     home_dir = os.environ.get("CLUSTER_HOME", "/local/home/hanlonm")
     images = Path(home_dir + '/Hierarchical-Localization/datasets/'+environment)
     outputs = Path(home_dir+ '/Hierarchical-Localization/outputs/'+environment+'/')
@@ -28,21 +28,22 @@ def build_map(environment):
 
     model = reconstruction.main(sfm_dir, images, sfm_pairs, feature_path, matches, verbose=True, camera_mode=pycolmap.CameraMode.SINGLE)
 
-    image_names = []
-    locations = []
+    if align:
+        image_names = []
+        locations = []
 
-    pose_file = images / "image_poses.txt"
-    with open(pose_file) as f:
-            for line in f.readlines():
-                line = line.rstrip('\n')
-                if line[0] == '#' or line == '':
-                    continue
-                data = line.replace(',', ' ').split()
-                image_names.append(data[0])
-                locations.append([float(data[1]),float(data[2]),float(data[3])])
+        pose_file = images / "image_poses.txt"
+        with open(pose_file) as f:
+                for line in f.readlines():
+                    line = line.rstrip('\n')
+                    if line[0] == '#' or line == '':
+                        continue
+                    data = line.replace(',', ' ').split()
+                    image_names.append(data[0])
+                    locations.append([float(data[1]),float(data[2]),float(data[3])])
 
-    similarity_transform = model.align_robust(image_names, locations, 3, max_error=0.05, min_inlier_ratio=0.3)
-    model.write(sfm_dir)
+        similarity_transform = model.align_robust(image_names, locations, 3, max_error=0.05, min_inlier_ratio=0.3)
+        model.write(sfm_dir)
 
     fig = viz_3d.init_figure()
     viz_3d.plot_reconstruction(fig, model, color='rgba(255,0,0,0.5)', name="mapping")
@@ -50,10 +51,11 @@ def build_map(environment):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--environment", type=str, default="00700")
+    parser.add_argument("--environment", type=str, default="DLAB_3")
+    parser.add_argument("--align", type=bool, default=True)
     
     args = parser.parse_args()
-    build_map(args.environment)
+    build_map(args.environment, args.align)
 
 
 if __name__ == "__main__":
