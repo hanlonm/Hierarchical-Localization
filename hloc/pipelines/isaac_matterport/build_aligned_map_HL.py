@@ -71,8 +71,8 @@ def optimize_reconstruction(reconstruction: pycolmap.Reconstruction,
         if num_observers < min_num_observers:
             reconstruction.delete_point3D(landmark)
             count_2 += 1
-        print(f"{count_1} points removed by observation distance")
-        print(f"{count_2} points removed by num_observers")
+    print(f"{count_1} points removed by observation distance")
+    print(f"{count_2} points removed by num_observers")
 
     return reconstruction
 
