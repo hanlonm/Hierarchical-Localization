@@ -34,7 +34,7 @@ def cleanup_h5(original_file, temp_file, remove_key):
 def main():
     np.set_printoptions(suppress=True)
     parser = argparse.ArgumentParser()
-    parser.add_argument("--environment", type=str, default="DLAB_3")
+    parser.add_argument("--environment", type=str, default="DLAB_5")
     args = parser.parse_args()
     home_dir = os.environ.get("CLUSTER_HOME", "/local/home/hanlonm")
     environment = args.environment
@@ -143,15 +143,15 @@ def main():
     p = np.mean(translations, axis=0)
     pq = np.concatenate((p,q))
     T_world_tag_avg = pt.transform_from_pq(pq)
-    T_world_tag_avg[:3, :3] = T_y_up[:3, :3] @ T_world_tag_avg[:3, :3]
+    T_world_tag_avg[:3, :3] =  T_world_tag_avg[:3, :3] @ T_y_up[:3, :3] 
     T_tag_world = pt.invert_transform(T_world_tag_avg)
 
     tm.add_transform(f"loc_tag", "map", T_world_tag_avg)
     tm.plot_frames_in("map", show_name=True, s=2)
     print()
     print(T_world_tag_avg)
-    print(pt.pq_from_transform(T_tag_world))
 
+    print("Use this pq for ROS map->loc_tag")
     print(pt.pq_from_transform(T_world_tag_avg))
     plt.show()
 
