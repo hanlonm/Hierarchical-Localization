@@ -92,8 +92,10 @@ def build_map(environment, align, optimize):
 
 
     retrieval_conf = extract_features.confs['netvlad']
-    feature_conf = extract_features.confs['superpoint_aachen']
-    matcher_conf = match_features.confs['NN-superpoint']
+    # feature_conf = extract_features.confs['superpoint_aachen']
+    # matcher_conf = match_features.confs['NN-superpoint']
+    feature_conf = extract_features.confs['sift']
+    matcher_conf = match_features.confs['NN-ratio']
 
     retrieval_path = extract_features.main(retrieval_conf, images, outputs)
     pairs_from_retrieval.main(retrieval_path, sfm_pairs, num_matched=20)
@@ -130,7 +132,7 @@ def build_map(environment, align, optimize):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--environment", type=str, default="DLAB_3")
+    parser.add_argument("--environment", type=str, default="DLAB_6")
     parser.add_argument("--align", type=bool, default=True)
     parser.add_argument("--optimize", type=bool, default=True)
     
