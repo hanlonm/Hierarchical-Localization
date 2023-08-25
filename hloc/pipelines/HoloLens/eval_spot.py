@@ -205,6 +205,7 @@ def gt_body_loc(result_dict, dataset, experiment_dir: Path, home_dir, environmen
             detect_image = cv2.cvtColor(undistorted_img, cv2.COLOR_BGR2GRAY)
 
             tags: List[Detection] = at_detector.detect(detect_image, True, dslr_camera_params, 0.1365)
+            tags = [tag for tag in tags if tag.tag_id==2]
             if len(tags) != 1:
                 print("too many tags in image!")
                 continue
@@ -226,11 +227,15 @@ def gt_body_loc(result_dict, dataset, experiment_dir: Path, home_dir, environmen
             # tm.add_transform(f"tag_{i}", "world", T_world_tag)
 
             print(T_world_tag)
-            if e_trans<1.0:
+            if e_trans<1.0 and (T_world_tag[2,3] > -0.62) and (T_world_tag[2,3]<-0.5):
+                
                 translations.append(pq[:3])
                 quats.append(pq[3:])
             else:
                 print("BAD LOC")
+                print(e_trans)
+                print(pq_map_bodygt)
+                print(pq_map_bodytag)
     translations = np.array(translations)
     quats = np.array(quats)
     q = average_quaternions(quaternions=quats[:])
@@ -241,9 +246,6 @@ def gt_body_loc(result_dict, dataset, experiment_dir: Path, home_dir, environmen
     T_tag_world = pt.invert_transform(T_world_tag_avg)
 
     tm.add_transform(f"loc_tag", "map", T_world_tag_avg)
-
-    
-    
     tm.plot_frames_in("map", show_name=True, s=1)
 
     pq_map_bodygt = pt.pq_from_transform(tm.get_transform("body_gt", "map")).reshape((1, 7))
@@ -253,7 +255,7 @@ def gt_body_loc(result_dict, dataset, experiment_dir: Path, home_dir, environmen
     
     if e_trans>0.5:
         print("WARNING POSSIBLE TAG LOCALIZATION FAILURE!")
-    #plt.show()
+        #plt.show()
     result_dict[experiment_dir.name] = {"gt": pq_map_bodygt.tolist()}
 
     return result_dict
@@ -306,6 +308,8 @@ def method_body_loc(result_dict, dataset, experiment_dir: Path, home_dir, enviro
         full_name = image.split("/")[1]
         exp = full_name[:17]
         method = full_name[18:-4]
+        if method == "gt":
+            continue
 
         gt_pose_file_path = experiment_dir/ f"{exp}/{method}/pose_file.txt"
         pose_dict = {}
@@ -320,6 +324,7 @@ def method_body_loc(result_dict, dataset, experiment_dir: Path, home_dir, enviro
                 pose_dict[tf_name] = pq
 
         result = localization_results[image]["PnP_ret"]
+        
         if result["success"]:
             tvec = result['tvec']
             qvec = result['qvec']
@@ -371,7 +376,7 @@ def copy_jpg_files(source_dir, destination_dir):
 def main():
     np.set_printoptions(suppress=True)
     parser = argparse.ArgumentParser()
-    parser.add_argument("--environment", type=str, default="DLAB_5")
+    parser.add_argument("--environment", type=str, default="DLAB_6")
     args = parser.parse_args()
     home_dir = os.environ.get("CLUSTER_HOME", "/local/home/hanlonm")
     environment = args.environment
@@ -379,18 +384,21 @@ def main():
     images = dataset
 
     # experiment_dir = Path("/local/home/hanlonm/data/Spot_Experiment/230823/23-08-23-09-01-02")
-    experiment_dir = Path("/local/home/hanlonm/data/Spot_Experiment/230823")
+    experiment_dir = Path("/local/home/hanlonm/data/Spot_Experiment/230825")
     experiments = os.listdir(str(experiment_dir))
 
     result_dict = {}
 
     for experiment in experiments:
         print(experiment)
-        #correct_names(str(experiment_dir/experiment))
-        #copy_jpg_files(experiment_dir/experiment, images/"spot_eval")
+        # correct_names(str(experiment_dir/experiment))
+        # copy_jpg_files(experiment_dir/experiment, images/"spot_eval")
         
-        result_dict = gt_body_loc(result_dict, dataset=dataset, experiment_dir=experiment_dir/experiment, home_dir=home_dir, environment="DLAB_5", images=images)
-    result_dict = method_body_loc(result_dict, dataset=dataset, experiment_dir=experiment_dir, home_dir=home_dir, environment="DLAB_5", images=images)
+        #if "40-32" in experiment:
+        result_dict = gt_body_loc(result_dict, dataset=dataset, experiment_dir=experiment_dir/experiment, home_dir=home_dir, environment=environment, images=images)
+    
+    
+    result_dict = method_body_loc(result_dict, dataset=dataset, experiment_dir=experiment_dir, home_dir=home_dir, environment=environment, images=images)
     print()
 
     # Save the dictionary to a JSON file
