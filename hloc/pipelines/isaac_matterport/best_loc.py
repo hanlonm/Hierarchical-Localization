@@ -44,8 +44,10 @@ def main():
     pairs = outputs / 'pairs-query-netvlad20.txt'  # top 20 retrieved by NetVLAD
     results = outputs / (environment + '_hloc_superpoint+superglue_netvlad20.txt')  # the result file
 
-    feature_conf = extract_features.confs['superpoint_aachen']
-    matcher_conf = match_features.confs['NN-superpoint']
+    # feature_conf = extract_features.confs['superpoint_aachen']
+    # matcher_conf = match_features.confs['NN-superpoint']
+    feature_conf = extract_features.confs['sift']
+    matcher_conf = match_features.confs['NN-ratio']
     retrieval_conf = extract_features.confs['netvlad']
 
     local_features = outputs / (feature_conf['output']+'.h5')
