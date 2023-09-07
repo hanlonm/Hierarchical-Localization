@@ -34,7 +34,7 @@ def cleanup_h5(original_file, temp_file, remove_key):
 def main():
     np.set_printoptions(suppress=True)
     parser = argparse.ArgumentParser()
-    parser.add_argument("--environment", type=str, default="DLAB_5")
+    parser.add_argument("--environment", type=str, default="DLAB_6")
     args = parser.parse_args()
     home_dir = os.environ.get("CLUSTER_HOME", "/local/home/hanlonm")
     environment = args.environment
@@ -120,7 +120,7 @@ def main():
             undistorted_img = cv2.undistort(img, camera_matrix, dist_coeffs)
             detect_image = cv2.cvtColor(undistorted_img, cv2.COLOR_BGR2GRAY)
 
-            tags: List[Detection] = at_detector.detect(detect_image, True, camera_params, 0.146)
+            tags: List[Detection] = at_detector.detect(detect_image, True, camera_params, 0.1365)
             if len(tags) > 1:
                 print("too many tags in image!")
                 continue
@@ -139,8 +139,8 @@ def main():
             print(T_world_tag)
     translations = np.array(translations)
     quats = np.array(quats)
-    q = average_quaternions(quaternions=quats)
-    p = np.mean(translations, axis=0)
+    q = average_quaternions(quaternions=quats[[0,1,2,4,5,6]])
+    p = np.mean(translations[[0,1,2,4,5,6]], axis=0)
     pq = np.concatenate((p,q))
     T_world_tag_avg = pt.transform_from_pq(pq)
     T_world_tag_avg[:3, :3] =  T_world_tag_avg[:3, :3] @ T_y_up[:3, :3] 
@@ -154,32 +154,6 @@ def main():
     print("Use this pq for ROS map->loc_tag")
     print(pt.pq_from_transform(T_world_tag_avg))
     plt.show()
-
-
-
-    
-
-    # image_dir = "/local/home/hanlonm/tag_localization/tag_images/"
-    # output_directory = "/local/home/hanlonm/tag_localization/"
-    # image_files = os.listdir(image_dir)
-
-    
-
-    # for filename in image_files:
-    #     # Load the image
-        
-
-    #     # Get the original dimensions
-    #     original_height, original_width = detect_image.shape[:2]
-
-    #     # Calculate the new dimensions for downsampling by half
-    #     new_width = original_width // 4
-    #     new_height = original_height // 4
-
-        
-    #     tags: List[Detection] = at_detector.detect(detect_image, True, camera_params, 0.1365)
-
-    #     print(tags[0].pose_t)
 
 
 if __name__ == "__main__":

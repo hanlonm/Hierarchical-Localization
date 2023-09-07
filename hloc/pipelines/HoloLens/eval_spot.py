@@ -257,11 +257,13 @@ def gt_body_loc(result_dict, dataset, experiment_dir: Path, home_dir, environmen
         print("WARNING POSSIBLE TAG LOCALIZATION FAILURE!")
         #plt.show()
     result_dict[experiment_dir.name] = {"gt": pq_map_bodygt.tolist()}
+    result_dict[experiment_dir.name]["odom"] = pq_map_bodytag.tolist()
 
     return result_dict
 
 
 def method_body_loc(result_dict, dataset, experiment_dir: Path, home_dir, environment, images):
+
     camera_string = "PINHOLE 640 480 552.0291012161067 552.0291012161067 320 240"
 
     outputs = Path(home_dir +'/Hierarchical-Localization/outputs/'+environment)

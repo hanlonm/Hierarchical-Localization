@@ -21,7 +21,7 @@ def rotate_and_undistort(directory, rotation, output_directory, prefix, calib_va
     dist_coeffs = np.array([k1, k2, p1, p2])
     
 
-    for pgm_file in tqdm(pgm_files[::4]):
+    for pgm_file in tqdm(pgm_files[::5]):
         pgm_path = os.path.join(directory, pgm_file)
         # output_path = os.path.join(output_directory, os.path.splitext(pgm_file)[0] + ".jpg")
 
@@ -46,7 +46,7 @@ calib_dict = {"LL": [368.61479342318705, 367.43916126955804, 238.42596191008707,
 
 
 
-data_dir = Path("/local/home/hanlonm/data/HL_captures/DLAB/2023-08-17-180949")
+data_dir = Path("/local/home/hanlonm/data/HL_captures/DLAB/2023-08-22-113629")
 
 pose_file_name = data_dir / "image_poses.txt"
 pose_file = open(pose_file_name, "w")

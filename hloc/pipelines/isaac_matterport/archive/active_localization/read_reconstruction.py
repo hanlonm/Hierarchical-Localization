@@ -73,25 +73,25 @@ T_cam_base = pt.transform_from(
 
 fig = viz_3d.init_figure()
 
-output_folder = "DLAB_3"
+output_folder = "00111_opt"
 #reconstruction = pycolmap.Reconstruction("/local/home/hanlonm/Hierarchical-Localization/outputs/00195_test/sfm_reference_empty")
 reconstruction = pycolmap.Reconstruction("/local/home/hanlonm/Hierarchical-Localization/outputs/{}/reconstruction".format(output_folder))
 
 
-for image_id, image in reconstruction.images.items():
-    image: Image
-    # print(image_id, image)
-    T_cam_world = pt.transform_from(pr.matrix_from_quaternion(image.qvec), image.tvec)
-    T_world_base = np.linalg.inv(T_cam_world) @ T_cam_base
-    pq = pt.pq_from_transform(T_world_base)
-    ax.scatter3D(pq[0],pq[1],pq[2], s=1)
-    # print([pq[0],pq[1],pq[2]])
-    #viz_3d.plot_camera_colmap(fig, image, reconstruction.cameras[0])
+# for image_id, image in reconstruction.images.items():
+#     image: Image
+#     # print(image_id, image)
+#     T_cam_world = pt.transform_from(pr.matrix_from_quaternion(image.qvec), image.tvec)
+#     T_world_base = np.linalg.inv(T_cam_world) @ T_cam_base
+#     pq = pt.pq_from_transform(T_world_base)
+#     ax.scatter3D(pq[0],pq[1],pq[2], s=1)
+#     # print([pq[0],pq[1],pq[2]])
+#     #viz_3d.plot_camera_colmap(fig, image, reconstruction.cameras[0])
 
-for point3D_id, point3D in reconstruction.points3D.items():
-    track = point3D.track
-    image_ids = [element.image_id for element in point3D.track.elements]
-    images = dict((key, reconstruction.images[key]) for key in image_ids)
+# for point3D_id, point3D in reconstruction.points3D.items():
+#     track = point3D.track
+#     image_ids = [element.image_id for element in point3D.track.elements]
+#     images = dict((key, reconstruction.images[key]) for key in image_ids)
 
     # print(image_ids)
     # print(track.elements)
@@ -100,36 +100,36 @@ for point3D_id, point3D in reconstruction.points3D.items():
 # for camera_id, camera in reconstruction.cameras.items():
 #     print(camera_id, camera)
 print(reconstruction.summary())
-mre = reconstruction.compute_mean_reprojection_error()
-print(reconstruction.filter_all_points3D(4, 0.1))
-print(reconstruction.filter_observations_with_negative_depth())
+# mre = reconstruction.compute_mean_reprojection_error()
+# print(reconstruction.filter_all_points3D(4, 0.1))
+# print(reconstruction.filter_observations_with_negative_depth())
 
-landmark_list = list(reconstruction.points3D.keys())
-pose_dict = pose_dict_from_reconstruction(reconstruction)
-print("Calculating viewing angles and distances:")
-min_obs_distance = 0.1
-max_min_obs_distance = 8.0
-min_num_observers = 5
-count_1 = 0
-count_2 = 0
-viz_3d.plot_reconstruction(fig, reconstruction, color='rgba(255,0,0,0.5)', name="mapping",cameras=False, )
-fig.show()
+# landmark_list = list(reconstruction.points3D.keys())
+# pose_dict = pose_dict_from_reconstruction(reconstruction)
+# print("Calculating viewing angles and distances:")
+# min_obs_distance = 0.1
+# max_min_obs_distance = 8.0
+# min_num_observers = 5
+# count_1 = 0
+# count_2 = 0
+# viz_3d.plot_reconstruction(fig, reconstruction, color='rgba(255,0,0,0.5)', name="mapping",cameras=False, )
+# fig.show()
 
-for idx, landmark in enumerate(tqdm(landmark_list)):
-    min_max_viewing_distances, num_observers = get_min_max_viewing_distances(
-        landmark_idx=landmark,
-        pose_dict=pose_dict,
-        reconstruction=reconstruction)
-    if min_max_viewing_distances[0] < min_obs_distance or min_max_viewing_distances[0] > max_min_obs_distance:
-        reconstruction.delete_point3D(landmark)
-        count_1 += 1
-        continue
-    if num_observers < min_num_observers:
-        reconstruction.delete_point3D(landmark)
-        count_2 += 1
+# for idx, landmark in enumerate(tqdm(landmark_list)):
+#     min_max_viewing_distances, num_observers = get_min_max_viewing_distances(
+#         landmark_idx=landmark,
+#         pose_dict=pose_dict,
+#         reconstruction=reconstruction)
+#     if min_max_viewing_distances[0] < min_obs_distance or min_max_viewing_distances[0] > max_min_obs_distance:
+#         reconstruction.delete_point3D(landmark)
+#         count_1 += 1
+#         continue
+#     if num_observers < min_num_observers:
+#         reconstruction.delete_point3D(landmark)
+#         count_2 += 1
     
-print(count_1)
-print(count_2)
+# print(count_1)
+# print(count_2)
 
 
 fig = viz_3d.init_figure()

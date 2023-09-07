@@ -7,3 +7,4 @@ outputs_bkp/
 datasets/*
 !datasets/sacre_coeur/
 .venv/
+.vscode
