@@ -380,7 +380,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--environment", type=str, default="DLAB_6")
     args = parser.parse_args()
-    home_dir = os.environ.get("CLUSTER_HOME", "/local/home/hanlonm")
+    home_dir = os.environ.get("BASE_DIR", "/local/home/hanlonm")
     environment = args.environment
     dataset = Path(home_dir + '/Hierarchical-Localization/datasets/'+environment)
     images = dataset
@@ -393,10 +393,8 @@ def main():
 
     for experiment in experiments:
         print(experiment)
-        # correct_names(str(experiment_dir/experiment))
-        # copy_jpg_files(experiment_dir/experiment, images/"spot_eval")
-        
-        #if "40-32" in experiment:
+        correct_names(str(experiment_dir/experiment))
+        copy_jpg_files(experiment_dir/experiment, images/"spot_eval")
         result_dict = gt_body_loc(result_dict, dataset=dataset, experiment_dir=experiment_dir/experiment, home_dir=home_dir, environment=environment, images=images)
     
     

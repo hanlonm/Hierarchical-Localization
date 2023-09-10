@@ -30,7 +30,7 @@ def main():
     
     args = parser.parse_args()
     environment = args.environment
-    home_dir = os.environ.get("CLUSTER_HOME", "/local/home/hanlonm")
+    home_dir = os.environ.get("BASE_DIR", "/local/home/hanlonm")
     dataset_dir = Path(home_dir + '/Hierarchical-Localization/datasets/'+environment)
     trajectories_file = np.loadtxt(dataset_dir / "trajectories.txt", dtype=str, delimiter=",")
 

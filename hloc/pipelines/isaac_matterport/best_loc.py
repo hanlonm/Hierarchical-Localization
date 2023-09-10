@@ -33,9 +33,9 @@ def main():
     parser.add_argument("--run_name", type=str, default="test")
     args = parser.parse_args()
 
-    home_dir = os.environ.get("CLUSTER_HOME", "/local/home/hanlonm")
+    home_dir = os.environ.get("BASE_DIR", "/local/home/hanlonm")
     environment = args.environment
-    eval_dir = Path(home_dir) / "mt-matthew/data/{}/best_loc".format(
+    eval_dir = Path(home_dir) / "active-viewpoint-selection/data/{}/best_loc".format(
         environment)
     
     dataset = Path(home_dir + '/Hierarchical-Localization/datasets/'+environment)

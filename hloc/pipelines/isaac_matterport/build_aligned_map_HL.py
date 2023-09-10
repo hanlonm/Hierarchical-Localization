@@ -84,7 +84,7 @@ def get_min_max_viewing_distances(
     return np.array([np.min(distances), np.max(distances)]), num_observers
 
 def build_map(environment, align, optimize):
-    home_dir = os.environ.get("CLUSTER_HOME", "/local/home/hanlonm")
+    home_dir = os.environ.get("BASE_DIR", "/local/home/hanlonm")
     images = Path(home_dir + '/Hierarchical-Localization/datasets/'+environment)
     outputs = Path(home_dir+ '/Hierarchical-Localization/outputs/'+environment+'/')
     sfm_pairs = outputs / 'pairs-netvlad.txt'

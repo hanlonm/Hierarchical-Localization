@@ -31,7 +31,7 @@ def main():
     parser.add_argument("--run_name", type=str, default="best_test")
     args = parser.parse_args()
 
-    home_dir = os.environ.get("CLUSTER_HOME", "/local/home/hanlonm")
+    home_dir = os.environ.get("BASE_DIR", "/local/home/hanlonm")
     environment = args.environment
     dataset = Path(home_dir + '/Hierarchical-Localization/datasets/'+environment)
     images = dataset
@@ -42,7 +42,7 @@ def main():
     
     # Evaluation Paths
     run_name = args.run_name
-    run_path = Path(home_dir + '/mt-matthew/eval_results/path_data') / str(f"{environment}_{run_name}")
+    run_path = Path(home_dir + '/active-viewpoint-selection/eval_results/path_data') / str(f"{environment}_{run_name}")
 
     feature_conf = extract_features.confs['superpoint_aachen']
     matcher_conf = match_features.confs['NN-superpoint']

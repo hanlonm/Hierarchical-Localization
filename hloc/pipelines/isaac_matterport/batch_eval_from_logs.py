@@ -18,7 +18,7 @@ localization_results: dict = logs['loc']
 sorted_result_keys = list(localization_results.keys())
 sorted_result_keys.sort()
 # Evaluation Paths
-run_path = Path('/local/home/hanlonm/mt-matthew/eval_results/00195_HL_run_2_NN')
+run_path = Path('/local/home/hanlonm/active-viewpoint-selection/eval_results/00195_HL_run_2_NN')
 
 trajectory_dirs = os.listdir(run_path)
 

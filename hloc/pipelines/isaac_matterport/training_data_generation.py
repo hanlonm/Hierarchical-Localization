@@ -32,12 +32,12 @@ def main():
     parser.add_argument("--run_name", type=str, default="test1")
     args = parser.parse_args()
 
-    home_dir = os.environ.get("CLUSTER_HOME", "/local/home/hanlonm")
+    home_dir = os.environ.get("BASE_DIR", "/local/home/hanlonm")
     environment = args.environment
     dataset = Path(home_dir + '/Hierarchical-Localization/datasets/'+environment)
     outputs = Path(home_dir +'/Hierarchical-Localization/outputs/'+environment)
     
-    environment_dataset_path = Path(home_dir) / "mt-matthew/data"
+    environment_dataset_path = Path(home_dir) / "active-viewpoint-selection/data"
     run_id = args.run_name
     hf = h5py.File(str(environment_dataset_path) + f"/training_data/{run_id}.h5", "r+")
 

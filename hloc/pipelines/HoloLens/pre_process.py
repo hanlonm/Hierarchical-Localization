@@ -24,7 +24,7 @@ def get_rotation_matrix(vec2, vec1=np.array([1, 0, 0])):
 
 
 def pre_process_hl_data(environment):
-    home_dir = os.environ.get("CLUSTER_HOME", "/local/home/hanlonm")
+    home_dir = os.environ.get("BASE_DIR", "/local/home/hanlonm")
     dataset_dir = Path(home_dir + '/Hierarchical-Localization/datasets/'+environment)
     
     image_files = np.loadtxt(dataset_dir / "images.txt", dtype=str)

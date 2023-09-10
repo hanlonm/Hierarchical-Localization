@@ -17,7 +17,7 @@ with open('/local/home/hanlonm/Hierarchical-Localization/outputs/00195_HL_SPA_NN
 
 result_dict = {}
 
-hf = h5py.File("/local/home/hanlonm/mt-matthew/data/00195_HL_SPA_NN/test-2000.h5", "r+")
+hf = h5py.File("/local/home/hanlonm/active-viewpoint-selection/data/00195_HL_SPA_NN/test-2000.h5", "r+")
 num_points = hf.attrs["num_points"]
 num_angles = hf.attrs["num_angles"]
 

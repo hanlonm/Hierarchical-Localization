@@ -36,7 +36,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--environment", type=str, default="DLAB_6")
     args = parser.parse_args()
-    home_dir = os.environ.get("CLUSTER_HOME", "/local/home/hanlonm")
+    home_dir = os.environ.get("BASE_DIR", "/local/home/hanlonm")
     environment = args.environment
     dataset = Path(home_dir + '/Hierarchical-Localization/datasets/'+environment)
     images = dataset
